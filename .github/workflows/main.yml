@@ -158,6 +158,7 @@ jobs:
       working-directory: ${{ env.working-directory }}
     
   azlogin_k8s_apply_nsg_modify:
+    environment: production
     runs-on: ubuntu-latest
     needs: [terraform-apply]
     env: 
