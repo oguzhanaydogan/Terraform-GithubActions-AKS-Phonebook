@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: search-deploy
+  labels:
+    app: search-server
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: search-server
+  template:
+    metadata:
+      name: search-pod
+      labels:
+        app: search-server
+    spec:
+      containers:
+      - name: search-server
+        image: eakkaya64/result-server
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: mysql-admin-password
+        envFrom:
+        - configMapRef:
+            name: servers-configmap
+
+
+---
+
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: search-server-svc
+  labels:
+    app: search-server
+spec:
+  type: NodePort
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30002
+  selector:
+    app: search-server

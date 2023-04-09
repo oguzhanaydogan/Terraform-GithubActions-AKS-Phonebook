@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: db-deploy
+  labels:
+    app: db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: db
+  template:
+    metadata:
+      name: db-pod
+      labels:
+        app: db
+    spec:
+      containers:
+      - name: db
+        image: mysql:5.7
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3306
+        env:
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: mysql-admin-password
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret
+              key: mysql-root-password
+        envFrom:
+          - configMapRef:
+              name: db-configmap
+        volumeMounts:
+        - name: phonebook-vol
+          mountPath: /var/lib/mysql
+      volumes:
+      - name: phonebook-vol
+        persistentVolumeClaim:
+          claimName: phonebook-pv-claim
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: db-svc
+  labels:
+    app: db-svc
+spec:
+  type: ClusterIP
+  ports:
+  - port: 3306
+    targetPort: 3306
+  selector:
+    app: db
