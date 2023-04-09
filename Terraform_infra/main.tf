@@ -92,7 +92,7 @@ resource "azurerm_lb_probe" "probe3002" {
   port            = 30002
 }
 resource "github_actions_environment_variable" "example_variable" {
-  repository       = "Kubernetes_Phonebook_GithubAction"
+  repository       = "testrepo"
   variable_name    = "NODERG"
   value            = azurerm_kubernetes_cluster.aks.node_resource_group
   environment      = "production"      
