@@ -181,7 +181,7 @@ jobs:
     - name: 'AKS Get credentials and Deploy Manifests'
       working-directory: ${{ env.working-directory }}
       run: |
-        az aks get-credentials --resource-group aks --name aks
+        az aks get-credentials --resource-group ${{ vars.AKSRG_NAME }} --name ${{ vars.AKS_NAME }}
         kubectl apply -f .
         nsg_name=$(az network nsg list --query "[?contains(name, 'aks')].[name]" --output tsv)
         az network nsg rule create --nsg-name $nsg_name --resource-group ${{ vars.NODERG }} --name open30001 --access Allow --priority 100 --destination-port-ranges 30001-30002
