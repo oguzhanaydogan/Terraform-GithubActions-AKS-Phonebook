@@ -97,19 +97,19 @@ resource "github_actions_environment_variable" "nodergname_var" {
   repository    = "testrepo"
   variable_name = "NODERG"
   value         = azurerm_kubernetes_cluster.aks.node_resource_group
-  environment   = "production"
+  environment   = var.environment
 }
 
 resource "github_actions_environment_variable" "aksrgname_var" {
   repository    = "testrepo"
   variable_name = "AKSRG_NAME"
   value         = azurerm_resource_group.rg3.name
-  environment   = "production"
+  environment   = var.environment
 }
 
 resource "github_actions_environment_variable" "aksname_var" {
   repository    = "testrepo"
   variable_name = "AKS_NAME"
   value         = azurerm_kubernetes_cluster.aks.name
-  environment   = "production"
+  environment   = var.environment
 }
