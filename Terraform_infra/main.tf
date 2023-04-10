@@ -10,7 +10,7 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "3.51.0"
     }
-      github = {
+    github = {
       source  = "integrations/github"
       version = "~> 5.0"
     }
@@ -76,9 +76,9 @@ resource "azurerm_lb_rule" "rule1" {
   frontend_port                  = 30001
   backend_port                   = 30001
   frontend_ip_configuration_name = data.azurerm_lb.lb.frontend_ip_configuration.0.name
-  disable_outbound_snat = true
-  probe_id = azurerm_lb_probe.probe3001.id
-  backend_address_pool_ids = [data.azurerm_lb_backend_address_pool.backAP.id]
+  disable_outbound_snat          = true
+  probe_id                       = azurerm_lb_probe.probe3001.id
+  backend_address_pool_ids       = [data.azurerm_lb_backend_address_pool.backAP.id]
 }
 resource "azurerm_lb_rule" "rule2" {
   loadbalancer_id                = data.azurerm_lb.lb.id
@@ -87,29 +87,29 @@ resource "azurerm_lb_rule" "rule2" {
   frontend_port                  = 30002
   backend_port                   = 30002
   frontend_ip_configuration_name = data.azurerm_lb.lb.frontend_ip_configuration.0.name
-  disable_outbound_snat = true 
-  probe_id = azurerm_lb_probe.probe3002.id
- 
+  disable_outbound_snat          = true
+  probe_id                       = azurerm_lb_probe.probe3002.id
+
   backend_address_pool_ids = [data.azurerm_lb_backend_address_pool.backAP.id]
-  }
+}
 
 resource "github_actions_environment_variable" "nodergname_var" {
-  repository       = "testrepo"
-  variable_name    = "NODERG"
-  value            = "${azurerm_kubernetes_cluster.aks.node_resource_group}"
-  environment      = "production"      
+  repository    = "testrepo"
+  variable_name = "NODERG"
+  value         = azurerm_kubernetes_cluster.aks.node_resource_group
+  environment   = "production"
 }
 
 resource "github_actions_environment_variable" "aksrgname_var" {
-  repository       = "testrepo"
-  variable_name    = "AKSRG_NAME"
-  value            = azurerm_resource_group.rg3.name
-  environment      = "production"      
+  repository    = "testrepo"
+  variable_name = "AKSRG_NAME"
+  value         = azurerm_resource_group.rg3.name
+  environment   = "production"
 }
 
 resource "github_actions_environment_variable" "aksname_var" {
-  repository       = "testrepo"
-  variable_name    = "AKS_NAME"
-  value            = azurerm_kubernetes_cluster.aks.name
-  environment      = "production"
+  repository    = "testrepo"
+  variable_name = "AKS_NAME"
+  value         = azurerm_kubernetes_cluster.aks.name
+  environment   = "production"
 }
