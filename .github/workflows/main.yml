@@ -158,7 +158,7 @@ jobs:
       run: terraform apply -auto-approve tfplan
       working-directory: ${{ env.working-directory }}
     
-  azlogin_k8s_apply_nsg_modify:
+  k8s_apply_nsg_modify:
     environment: production
     runs-on: ubuntu-latest
     needs: [terraform-apply]
@@ -179,7 +179,7 @@ jobs:
         version: 'v1.15.0' # default is latest stable
       id: install
        
-    - name: 'AKS Get credentials and Deploy Manifests'
+    - name: 'Create NSG rule'
       working-directory: ${{ env.working-directory }}
       run: |
         nsg_name=$(az network nsg list --resource-group ${{ vars.NODERG }} --query "[?contains(name, 'aks')].[name]" --output tsv)
