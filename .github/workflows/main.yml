@@ -52,8 +52,8 @@ jobs:
     # Will fail the build if not
     - name: Terraform Format
       run: terraform fmt -check
+      working-directory: ${{ env.working-directory }}
       
-
     # Generates an execution plan for Terraform
     # An exit code of 0 indicated no changes, 1 a terraform failure, 2 there are pending changes.
     - name: Terraform Plan
@@ -79,6 +79,7 @@ jobs:
       with:
         name: tfplan
         path: Terraform_infra/tfplan
+    
     # Create string output of Terraform Plan
     - name: Create String Output
       id: tf-plan-string
@@ -122,7 +123,7 @@ jobs:
                 
   terraform-apply:
     name: 'Terraform Apply'
-#     if: github.ref == 'refs/heads/main' && needs.terraform-plan.outputs.tfplanExitCode == 2
+    if: github.ref == 'refs/heads/main' && needs.terraform-plan.outputs.tfplanExitCode == 2
     runs-on: ubuntu-latest
     environment: production
     needs: [terraform-plan]
@@ -166,13 +167,13 @@ jobs:
       
     steps:
     
-    - uses: actions/checkout@v3
-      
+    - uses: actions/checkout@v3 
       
     - name: 'Login via Azure CLI'
       uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_SERVICE_PRINCIPAL }} 
+    
     - uses: azure/setup-kubectl@v3
       with:
         version: 'v1.15.0' # default is latest stable
@@ -181,12 +182,20 @@ jobs:
     - name: 'AKS Get credentials and Deploy Manifests'
       working-directory: ${{ env.working-directory }}
       run: |
-        az aks get-credentials --resource-group aks --name aks
-        kubectl apply -f .
-        nsg_name=$(az network nsg list --query "[?contains(name, 'aks')].[name]" --output tsv)
+        nsg_name=$(az network nsg list --resource-group ${{ vars.NODERG }} --query "[?contains(name, 'aks')].[name]" --output tsv)
         az network nsg rule create --nsg-name $nsg_name --resource-group ${{ vars.NODERG }} --name open30001 --access Allow --priority 100 --destination-port-ranges 30001-30002
 
-        
+    - name: AKS configuration
+      uses: Azure/aks-set-context@v1
+      with:
+          creds: '${{ secrets.AZURE_SERVICE_PRINCIPAL }}'
+          cluster-name: ${{ vars.AKS_NAME }}
+          resource-group: ${{ vars.AKSRG_NAME }}
+    
+    - name: Deploy to AKS
+      uses: Azure/k8s-deploy@v4
+      with:
+         manifests: k8s/
         
         
         
