@@ -108,7 +108,7 @@ resource "github_actions_environment_variable" "aksrgname_var" {
 }
 
 resource "github_actions_environment_variable" "aksname_var" {
-  repository    = "testrepo"
+  repository    = "<repository-name>"
   variable_name = "AKS_NAME"
   value         = azurerm_kubernetes_cluster.aks.name
   environment   = var.environment
