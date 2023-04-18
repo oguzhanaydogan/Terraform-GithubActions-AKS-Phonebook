@@ -30,9 +30,9 @@ The Terraform configuration file deploys the following resources:
 Since GitHub Actions Pipeline uses an ephemeral agent we need to define a backend to keep our `terraform.tfstate`. We configure our backend to Azure Blob Container with following code 
 ```
   backend "azurerm" {
-    resource_group_name  = "sshkey"
-    storage_account_name = "ccseyhan"
-    container_name       = "test"
+    resource_group_name  = "<resource-group-name>"
+    storage_account_name = "<storage-account-name>"
+    container_name       = "<container-name>"
     key                  = "terraform.tfstate"
   }
 ```
@@ -48,7 +48,7 @@ The pipeline is configured using GitHub Actions. The configuration file main.yml
 Since we have our Terraform configuration files in a dedicated folder, we need to define this path in the job environment for the steps which need to access to this folder to run 
 ```
 env:
-    working-directory: Terraform_infra/
+    working-directory: infrastructure/
 ``` 
 
 In a similar fashion we need to define `k8s` path to apply our Kubernetes Manifest Files
