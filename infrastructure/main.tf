@@ -1,8 +1,8 @@
 terraform {
   backend "azurerm" {
-    resource_group_name  = "sshkey"
-    storage_account_name = "ccseyhan"
-    container_name       = "test"
+    resource_group_name  = "<resource-group-name"
+    storage_account_name = "<storage-account-name>"
+    container_name       = "<container-name>"
     key                  = "terraform.tfstate"
   }
   required_providers {
@@ -27,15 +27,15 @@ provider "azurerm" {
   }
 }
 
-resource "azurerm_resource_group" "rg3" {
-  name     = var.name
+resource "azurerm_resource_group" "rg" {
+  name     = "${var.prefix}-rg"
   location = var.location
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = var.name
-  location            = var.location
-  resource_group_name = azurerm_resource_group.rg3.name
+  name                = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  resource_group_name = azurerm_resource_group.rg.name
   dns_prefix          = "exampleaks1"
 
   default_node_pool {
@@ -94,16 +94,16 @@ resource "azurerm_lb_rule" "rule2" {
 }
 
 resource "github_actions_environment_variable" "nodergname_var" {
-  repository    = "testrepo"
+  repository    = "<repository-name>"
   variable_name = "NODERG"
   value         = azurerm_kubernetes_cluster.aks.node_resource_group
   environment   = var.environment
 }
 
 resource "github_actions_environment_variable" "aksrgname_var" {
-  repository    = "testrepo"
+  repository    = "<repository-name>"
   variable_name = "AKSRG_NAME"
-  value         = azurerm_resource_group.rg3.name
+  value         = azurerm_resource_group.rg.name
   environment   = var.environment
 }
 
