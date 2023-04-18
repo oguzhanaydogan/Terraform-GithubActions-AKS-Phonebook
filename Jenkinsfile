@@ -8,7 +8,7 @@ pipeline {
         stage('Create Infrastructure for the App') {
             steps {
                 sh 'az login --identity'
-                dir('/var/lib/jenkins/workspace/Kubernetes-Phonebook-Azure/Terraform_infra'){
+                dir('/var/lib/jenkins/workspace/Terraform-GithubActions-Jenkins-AKS-Phonebook/infrastructure'){
                     echo 'Creating Infrastructure for the App on AZURE Cloud'
                     sh 'terraform init'
                     sh 'terraform apply --auto-approve'
@@ -18,7 +18,7 @@ pipeline {
 
         stage('Connect to AKS and set NSG permissions') {
             steps {
-                dir('/var/lib/jenkins/workspace/Kubernetes-Phonebook-Azure/Terraform_infra'){
+                dir('/var/lib/jenkins/workspace/Terraform-GithubActions-Jenkins-AKS-Phonebook/infrastructure'){
                     echo 'Injecting Terraform Output into connection command'
                     script {
                         env.AKS_NAME = sh(script: 'terraform output -raw aks_name', returnStdout:true).trim()
@@ -37,7 +37,7 @@ pipeline {
         }
         stage('Deploy K8s files') {
             steps {
-                dir('/var/lib/jenkins/workspace/Kubernetes-Phonebook-Azure/k8s') {
+                dir('/var/lib/jenkins/workspace/Terraform-GithubActions-Jenkins-AKS-Phonebook/k8s') {
                     sh 'kubectl apply -f .'
                 }
             }
@@ -47,7 +47,7 @@ pipeline {
                 timeout(time:5, unit:'DAYS'){
                     input message:'Do you want to terminate?'
                 }
-                dir('/var/lib/jenkins/workspace/Kubernetes-Phonebook-Azure/Terraform_infra'){
+                dir('/var/lib/jenkins/workspace/Terraform-GithubActions-Jenkins-AKS-Phonebook/infrastructure'){
                     sh """
                     terraform destroy --auto-approve
                     """
